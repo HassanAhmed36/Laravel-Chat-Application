@@ -1,0 +1,38 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+Route::get('/', function () {
+
+    if (Auth::check()) {
+        return redirect()->back();
+    }
+    return view('index');
+})->name('index');
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/rigester', [AuthController::class, 'rigester'])->name('rigester');
+Route::post('/submit-rigester', [AuthController::class, 'SubmitRigester'])->name('submit.register');
+Route::post('/submit-login', [AuthController::class, 'SubmitLogin'])->name('submit.login');
+
+Route::middleware(['CheckAuth'])->group(function () {
+    Route::get('/Search-User', [UserController::class, 'searchUser'])->name('search.user');
+    Route::get('/chat/{id}', [UserController::class, 'LoadChat'])->name('chat');
+    Route::get('/load-messages', [MessageController::class, 'LoadChat'])->name('load.message');
+    Route::post('/send-messages', [MessageController::class, 'SendMessages'])->name('send.message');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+});
