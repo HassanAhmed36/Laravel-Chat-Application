@@ -29,7 +29,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => 'required',
-            'email' => 'required|email|unique:users,email', // Validate email for uniqueness in the users table
+            'email' => 'required|email|unique:users,email',
             'password' => 'required'
         ]);
 
@@ -58,6 +58,7 @@ class AuthController extends Controller
             return redirect()->route('login')->with('error', 'Invalid Credentials password');
         }
 
+        $user->update(['is_active' => 1]);
 
         Auth::login($user);
 
@@ -65,6 +66,8 @@ class AuthController extends Controller
     }
     public function logout()
     {
+        $user_id = Auth::user()->id;
+        User::findOrFail($user_id)->update(['is_active' => 0]);
         Auth::logout();
         return redirect()->route('index')->with('success', 'User Logout Successfully!');
     }
